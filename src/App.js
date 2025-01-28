@@ -1,53 +1,105 @@
 import React, { useState } from 'react';
 
 function App() {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
+
+  const handleChange = (event) => {
+    setText(event.target.value);
+  };
 
   const handleSave = () => {
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'document.txt';
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "editor.txt";
     link.click();
-    URL.revokeObjectURL(url);
+  };
+
+  const handleClear = () => {
+    setText("");
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px', fontFamily: 'Arial' }}>
-      <h1>Simple Text Editor</h1>
+    <div style={styles.container}>
+      <h1 style={styles.heading}>Online Text Editor</h1>
       <textarea
-        style={{
-          width: '80%',
-          height: '300px',
-          margin: '10px 0',
-          fontSize: '16px',
-          padding: '10px',
-          borderRadius: '5px',
-          border: '1px solid #ccc',
-        }}
-        placeholder="Type your text here..."
         value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-      <br />
-      <button
-        style={{
-          padding: '10px 20px',
-          fontSize: '16px',
-          backgroundColor: '#007bff',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
-        onClick={handleSave}
-      >
-        Save
-      </button>
+        onChange={handleChange}
+        rows="10"
+        cols="50"
+        placeholder="Start typing here..."
+        style={styles.textArea}
+      ></textarea>
+      <div style={styles.buttonContainer}>
+        <button onClick={handleSave} style={styles.saveButton}>
+          Save
+        </button>
+        <button onClick={handleClear} style={styles.clearButton}>
+          Clear
+        </button>
+      </div>
     </div>
   );
 }
 
-export default App;
+const styles = {
+  container: {
+    padding: "30px",
+    textAlign: "center",
+    backgroundColor: "#f4f4f9",
+    borderRadius: "8px",
+    width: "80%",
+    margin: "50px auto",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    fontFamily: "'Arial', sans-serif",
+  },
+  heading: {
+    color: "#333",
+    fontSize: "2.5rem",
+    marginBottom: "20px",
+    fontWeight: "bold",
+  },
+  textArea: {
+    width: "80%",
+    height: "250px",
+    padding: "15px",
+    fontSize: "1rem",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+    outline: "none",
+    resize: "none",
+    fontFamily: "'Courier New', monospace",
+    transition: "border-color 0.3s",
+  },
+  textAreaFocus: {
+    borderColor: "#007BFF",
+  },
+  buttonContainer: {
+    marginTop: "20px",
+    display: "flex",
+    justifyContent: "center",
+    gap: "20px",
+  },
+  saveButton: {
+    padding: "10px 20px",
+    backgroundColor: "#007BFF",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "1rem",
+    cursor: "pointer",
+    transition: "background-color 0.3s",
+  },
+  clearButton: {
+    padding: "10px 20px",
+    backgroundColor: "#f44336",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "1rem",
+    cursor: "pointer",
+    transition: "background-color 0.3s",
+  },
+};
 
+export default App;
