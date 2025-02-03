@@ -1,12 +1,51 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 
 const TextEditor = () => {
   const [text, setText] = useState("");
+  const [socket, setSocket] = useState(null);
 
-  const handleChange = (event) => {
-    setText(event.target.value);
-    
-  };
+  useEffect(() => {
+    const newSocket = new WebSocket('ws://localhost:5001');
+    setSocket(newSocket);
+
+    newSocket.onopen = () => {
+        console.log('WebSocket connection established');
+    };
+
+    newSocket.onmessage = (event) => {
+        try {
+            const message = JSON.parse(event.data);
+            if (message.type === 'init') {
+                setText(message.data);
+            } else if (message.type === 'update') {
+                setText(message.data);
+            }
+        } catch (error) {
+            console.error('Error parsing message:', error);
+        }
+    };
+
+    newSocket.onclose = () => {
+        console.log('WebSocket connection closed');
+    };
+
+    newSocket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+
+    return () => {
+        newSocket.close();
+    };
+}, []); 
+
+const handleChange = (e) => {
+  const newDocument = e.target.value;
+  setText(newDocument);
+  if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: 'update', data: newDocument }));
+  }
+};
+  
 
   const handleSave = () => {
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
